@@ -57,6 +57,7 @@ public class Player extends MapObject {
 	private int bulletCost;
 	private int bulletDamage;
 	public boolean played;
+	private int currentItem;
 	private ArrayList<BufferedImage[]> sprites;
 	private final int[] numFrames = {1, 3, 4, 4};
 	private double sanicCharge;
@@ -85,6 +86,7 @@ public class Player extends MapObject {
 		bullet = maxBullets = 1997;
 		bulletCost = 50;
 		bulletDamage = 1;
+		currentItem = Item.DOUBLE;
 		bullets = new ArrayList<Bullet>();
 		sfx = new HashMap<String, AudioPlayer>();
 		sfx.put("sanicHit", new AudioPlayer("/SFX/sonic017.wav"));
@@ -162,10 +164,26 @@ public class Player extends MapObject {
 			}
 			if(bullet>bulletCost&&modTime%2==0){
 				bullet -= bulletCost;
+				if(currentItem == Item.THREEWAY){
+					bullet -= bulletCost;
+				}
 				if(!sanic){
-					Bullet b = new Bullet(tileMap, facingRight);
+					Bullet b = new Bullet(tileMap, facingRight, currentItem);
 					b.setPosition(x, y);
 					bullets.add(b);
+					if(currentItem == Item.THREEWAY){
+						Bullet c = new Bullet(tileMap, facingRight, Item.THREEWAY_TOP);
+						c.setPosition(x, y);
+						bullets.add(c);
+						Bullet d = new Bullet(tileMap, facingRight, Item.THREEWAY_BOTTOM);
+						d.setPosition(x, y);
+						bullets.add(d);
+					}
+					if(currentItem == Item.DOUBLE){
+						System.out.println("yes" + x + " " +(y + 3));
+						Bullet e = new Bullet(tileMap, facingRight, 10);
+						e.setPosition(x, y+3);
+					}
 				}
 			}
 		}else if(prevFiring){
@@ -346,5 +364,11 @@ public class Player extends MapObject {
 	}
 	public boolean isDead(){
 		return dead;
+	}
+	public int getCurrentItem() {
+		return currentItem;
+	}
+	public void setCurrentItem(int currentItem) {
+		this.currentItem = currentItem;
 	}
 }

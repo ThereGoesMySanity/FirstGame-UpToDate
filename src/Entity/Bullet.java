@@ -13,12 +13,21 @@ public class Bullet extends MapObject{
 	public static String ninjaStar1 = "/Sprites/ThrowingStar1grey.png";
 	public static String ninjaStar2 = "/Sprites/ThrowingStar2grey.png";
 	private boolean remove;
+	private int timer = 0;
 	private BufferedImage[] sprites;
-	public Bullet(TileMap tm, boolean right) {
+	private int item;
+	public Bullet(TileMap tm, boolean right, int item) {
 		super(tm);
+		this.item = item;
 		moveSpeed = 6;
 		if(right)dx = moveSpeed;
 		else dx = -moveSpeed;
+		if(item == Item.THREEWAY_BOTTOM){
+			dy = 2;
+		}
+		if(item == Item.THREEWAY_TOP){
+			dy = -2;
+		}
 		width = 16;
 		height = 16;
 		cwidth = 12;
@@ -49,18 +58,28 @@ public class Bullet extends MapObject{
 		if(hit)return;
 		hit = true;
 		dx = 0;
+		dy = 0;
 	}
 	public boolean shouldRemove(){return remove;}
 	public void update(){
-		if(dx == 0 && !hit){
+		if((dx == 0||(dy == 0&&(item == Item.THREEWAY_BOTTOM||item == Item.THREEWAY_TOP))) && !hit){
 			setHit();
 		}
 		checkTileMapCollision();
+		
+		
+		switch (item){
+			case Item.WIGGLE:
+				ytemp += (int)(-5*Math.sin(timer/2));
+				break;
+		}
+		timer++;
 		setPosition(xtemp, ytemp);
 		animation.update();
 		if(hit){
 			remove = true;
 		}
+		System.out.println(y);
 	}
 	public void draw(Graphics2D g){
 		setMapPosition();
