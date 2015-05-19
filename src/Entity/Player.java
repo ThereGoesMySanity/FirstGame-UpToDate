@@ -1,15 +1,14 @@
 package Entity;
-import Audio.AudioPlayer;
-import Main.GamePanel;
-import TileMap.*;
-
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import Audio.AudioPlayer;
+import TileMap.TileMap;
 public class Player extends MapObject {
 	public static boolean glitch;
 	public boolean sanic;
@@ -20,15 +19,18 @@ public class Player extends MapObject {
 		sanic = true;
 		if(!sanicd){
 			try{
-				BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Sanic.png"));
+				BufferedImage spritesheet = ImageIO.read(
+						getClass().getResourceAsStream("/Sprites/Sanic.png"));
 				sprites = new ArrayList<BufferedImage[]>();
 				for(int i=0; i<4; i++){
 					BufferedImage[] bi = new BufferedImage[numFrames[i]];
 					for(int j = 0; j<numFrames[i]; j++){
 						if(i!=3){
-							bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
+							bi[j] = spritesheet.getSubimage(
+									j*width, i*height, width, height);
 						}else{
-							bi[j] = spritesheet.getSubimage(j*2*width, i*height, width, height);
+							bi[j] = spritesheet.getSubimage(
+									j*2*width, i*height, width, height);
 						}			
 					}
 					sprites.add(bi);
@@ -57,7 +59,7 @@ public class Player extends MapObject {
 	private int bulletCost;
 	private int bulletDamage;
 	public boolean played;
-	private int currentItem;
+	private boolean[] currentItems;
 	private ArrayList<BufferedImage[]> sprites;
 	private final int[] numFrames = {1, 3, 4, 4};
 	private double sanicCharge;
@@ -86,22 +88,26 @@ public class Player extends MapObject {
 		bullet = maxBullets = 1997;
 		bulletCost = 50;
 		bulletDamage = 1;
-		currentItem = Item.DOUBLE;
+		currentItems = new boolean[Item.NUM_ITEMS];
+		Arrays.fill(currentItems, false);
 		bullets = new ArrayList<Bullet>();
 		sfx = new HashMap<String, AudioPlayer>();
 		sfx.put("sanicHit", new AudioPlayer("/SFX/sonic017.wav"));
 		sfx.put("sanicSlow", new AudioPlayer("/SFX/sonic005.wav"));
 		sfx.put("sanicStep", new AudioPlayer("/SFX/sonic006.wav"));
 		try{
-			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player.png"));
+			BufferedImage spritesheet = ImageIO.read(getClass()
+					.getResourceAsStream("/Sprites/Player.png"));
 			sprites = new ArrayList<BufferedImage[]>();
 			for(int i=0; i<4; i++){
 				BufferedImage[] bi = new BufferedImage[numFrames[i]];
 				for(int j = 0; j<numFrames[i]; j++){
 					if(i!=3){
-						bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
+						bi[j] = spritesheet.getSubimage(
+								j*width, i*height, width, height);
 					}else{
-						bi[j] = spritesheet.getSubimage(j*2*width, i*height, width, height);
+						bi[j] = spritesheet.getSubimage(
+								j*2*width, i*height, width, height);
 					}
 
 				}
@@ -164,25 +170,46 @@ public class Player extends MapObject {
 			}
 			if(bullet>bulletCost&&modTime%2==0){
 				bullet -= bulletCost;
-				if(currentItem == Item.THREEWAY){
+				if(currentItems[Item.THREEWAY]){
 					bullet -= bulletCost;
+					if(currentItems[Item.TWENTY_TWENTY]){
+						bullet -= 2*bulletCost;
+					}
 				}
 				if(!sanic){
-					Bullet b = new Bullet(tileMap, facingRight, currentItem);
+					Bullet b = new Bullet(tileMap, facingRight, currentItems);
 					b.setPosition(x, y);
 					bullets.add(b);
-					if(currentItem == Item.THREEWAY){
-						Bullet c = new Bullet(tileMap, facingRight, Item.THREEWAY_TOP);
+					if(currentItems[Item.THREEWAY]){
+						boolean[] top = new boolean[Item.NUM_ITEMS];
+						boolean[] bottom = new boolean[Item.NUM_ITEMS];
+						top[0] = bottom[2] = true;
+						top [1] = top[2] = bottom[0] = bottom[1] = false;
+						System.arraycopy(
+								currentItems, 3, top, 3, Item.NUM_ITEMS-3);
+						System.arraycopy(
+								currentItems, 3, bottom, 3, Item.NUM_ITEMS-3);
+						Bullet c = new Bullet(tileMap, facingRight, top);
 						c.setPosition(x, y);
 						bullets.add(c);
-						Bullet d = new Bullet(tileMap, facingRight, Item.THREEWAY_BOTTOM);
+						Bullet d = new Bullet(tileMap, facingRight, bottom);
 						d.setPosition(x, y);
 						bullets.add(d);
+						if(currentItems[Item.TWENTY_TWENTY]){
+							Bullet e = new Bullet(
+									tileMap, facingRight, top);
+							e.setPosition(x, y+5);
+							bullets.add(e);
+							Bullet f = new Bullet(
+									tileMap, facingRight, bottom);
+							f.setPosition(x, y-5);
+							bullets.add(f);
+						}
 					}
-					if(currentItem == Item.DOUBLE){
-						System.out.println("yes" + x + " " +(y + 3));
-						Bullet e = new Bullet(tileMap, facingRight, 10);
-						e.setPosition(x, y+3);
+					if(currentItems[Item.TWENTY_TWENTY]){
+						Bullet e = new Bullet(tileMap, facingRight, currentItems);
+						e.setPosition(x, y+5);
+						bullets.add(e);
 					}
 				}
 			}
@@ -243,7 +270,6 @@ public class Player extends MapObject {
 			flinchTime += 1;
 			if(flinchTime>60){
 				flinching = false;
-				System.out.println("done");
 				flinchTime = 0;
 			}
 		}
@@ -335,7 +361,6 @@ public class Player extends MapObject {
 				if(bullets.get(j).intersects(e)){
 					e.hit(bulletDamage);
 					bullets.get(j).setHit();
-					System.out.println("hit, " +e.getHealth());
 				}
 			}
 			if(intersects(e)){
@@ -350,8 +375,18 @@ public class Player extends MapObject {
 			}
 		}
 	}
+	public void checkItem(ArrayList<Item> items){
+		for(int i = 0; i < items.size(); i++){
+			Item it = items.get(i);
+			if(intersects(it)){
+				items.remove(i);
+				currentItems[it.getItem()] = true;
+			}
+		}
+	}
 	public void hit(int damage){
 		if(flinching)return;
+		Arrays.fill(currentItems, false);
 		health-=damage;
 		if(health<=0){
 			dead = true;
@@ -365,10 +400,10 @@ public class Player extends MapObject {
 	public boolean isDead(){
 		return dead;
 	}
-	public int getCurrentItem() {
-		return currentItem;
+	public boolean[] getCurrentItems() {
+		return currentItems;
 	}
-	public void setCurrentItem(int currentItem) {
-		this.currentItem = currentItem;
+	public void setCurrentItems(boolean[] currentItem) {
+		this.currentItems = currentItem;
 	}
 }

@@ -15,23 +15,30 @@ public class Bullet extends MapObject{
 	private boolean remove;
 	private int timer = 0;
 	private BufferedImage[] sprites;
-	private int item;
-	public Bullet(TileMap tm, boolean right, int item) {
+	private boolean[] items;
+	private int scale;
+	public Bullet(TileMap tm, boolean right, boolean[] currentItems) {
 		super(tm);
-		this.item = item;
+		this.items = currentItems;
+		scale = 1;
+		if(items[Item.DOUBLE]){
+			scale = 2;
+		}
 		moveSpeed = 6;
 		if(right)dx = moveSpeed;
 		else dx = -moveSpeed;
-		if(item == Item.THREEWAY_BOTTOM){
+		if(currentItems[Item.THREEWAY_BOTTOM]){
 			dy = 2;
-		}
-		if(item == Item.THREEWAY_TOP){
+		}else if(currentItems[Item.THREEWAY_TOP]){
 			dy = -2;
+		}else{
+			dy = 0;
 		}
-		width = 16;
-		height = 16;
-		cwidth = 12;
-		cheight = 12;
+		width = 16*scale;
+		height = 16*scale;
+		cwidth = 12*scale;
+		cheight = 12*scale;
+		
 		try{
 			animation = new Animation();
 			if(ninjaStar1 == "/Sprites/Orange-tabby-cat-icon.png"){
@@ -62,16 +69,17 @@ public class Bullet extends MapObject{
 	}
 	public boolean shouldRemove(){return remove;}
 	public void update(){
-		if((dx == 0||(dy == 0&&(item == Item.THREEWAY_BOTTOM||item == Item.THREEWAY_TOP))) && !hit){
+		if((dx == 0||(dy == 0
+				&&(items[Item.THREEWAY_BOTTOM]
+						||items[Item.THREEWAY_TOP])))
+				&& !hit){
 			setHit();
 		}
 		checkTileMapCollision();
 		
 		
-		switch (item){
-			case Item.WIGGLE:
-				ytemp += (int)(-5*Math.sin(timer/2));
-				break;
+		if(items[Item.WIGGLE]){
+			ytemp += (int)(-5*Math.sin(timer/2));
 		}
 		timer++;
 		setPosition(xtemp, ytemp);
@@ -79,11 +87,15 @@ public class Bullet extends MapObject{
 		if(hit){
 			remove = true;
 		}
-		System.out.println(y);
 	}
 	public void draw(Graphics2D g){
 		setMapPosition();
-		g.drawImage(animation.getImage(), (int)(x+xmap-width/2), (int)(y+ymap-height/2), null);
+		g.drawImage(animation.getImage(), 
+				(int)(x+xmap-width/2), 
+				(int)(y+ymap-height/2),
+				width,
+				height,
+				null);
 	}
 	public static void setStar(String s) {
 		if(s == "cat"){

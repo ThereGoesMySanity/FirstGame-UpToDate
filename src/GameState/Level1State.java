@@ -38,6 +38,7 @@ public class Level1State extends GameState{
 		player = new Player(tileMap);
 		player.setPosition(100, -100);
 		populateEnemies();
+		populateItems();
 		hud = new HUD(player);
 		explosions = new ArrayList<Explosion>();
 		bgMusic = new AudioPlayer("/Music/song.wav");
@@ -76,6 +77,24 @@ public class Level1State extends GameState{
 		}
 		
 	}
+	private void populateItems(){
+		items = new ArrayList<Item>();
+		Item james;
+		Point[] points = new Point[]{
+				new Point(300, 180),
+				new Point(600, 180),
+				new Point(930, 50),
+				new Point(1800, 180)
+		};
+		int [] itemses = new int[]{
+				Item.THREEWAY, Item.TWENTY_TWENTY, Item.WIGGLE, Item.DOUBLE
+		};
+		for(int i = 0; i < points.length; i++){
+			james = new Item(tileMap, itemses[i]);
+			james.setPosition(points[i].x, points[i].y);
+			items.add(james);
+		}
+	}
 	private void gottaGoFast(){
 		tileMap.loadTiles("/Tilesets/lvl1tilesout_sanic.png");
 		player.maxSpeed = 10;
@@ -104,6 +123,11 @@ public class Level1State extends GameState{
 				player.gety());
 		background.update();
 		player.checkAttack(enemies);
+		player.checkItem(items);
+		for(int i = 0; i < items.size(); i++){
+			Item it =  items.get(i);
+			it.update();
+		}
 		for(int i=0; i<enemies.size();i++){
 			Enemy e = enemies.get(i);
 			e.update();
@@ -131,6 +155,9 @@ public class Level1State extends GameState{
 		background.draw(g);
 		tileMap.draw(g);
 		player.draw(g);
+		for(Item i : items){
+			i.draw(g);
+		}
 		for(Enemy i : enemies){
 			i.draw(g);
 		}

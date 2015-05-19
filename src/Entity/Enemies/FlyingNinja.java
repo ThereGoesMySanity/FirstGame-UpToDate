@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 public class FlyingNinja extends Enemy {
 	
 	private BufferedImage[] sprites;
-	private long elapsed;
 	private BufferedImage[] sprites_dmg;
 	private int prevHealth;
 	private int healthCounter;
@@ -67,7 +66,7 @@ public class FlyingNinja extends Enemy {
 		right = false;
 		left = true;
 		facingRight = false;
-		elapsed = System.nanoTime();
+		System.nanoTime();
 	}
 	
 	private void getNextPosition() {
@@ -125,9 +124,6 @@ public class FlyingNinja extends Enemy {
 		
 		// update animation
 		animation.update();
-		if((System.nanoTime()-(int)(elapsed/1000000))%3000 == 0){
-			
-		}
 	}
 	
 	public void draw(Graphics2D g) {

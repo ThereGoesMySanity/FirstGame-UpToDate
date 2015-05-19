@@ -86,10 +86,6 @@ public abstract class MapObject {
 		xtemp = x;
 		ytemp = y;
 		
-		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-		StackTraceElement e = stacktrace[2];//maybe this number needs to be corrected
-		String methodName = e.getClassName();
-		
 		calculateCorners(x, ydest);
 		if(dy < 0) {
 			if(topLeft || topRight) {
