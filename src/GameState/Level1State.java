@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import Audio.AudioPlayer;
 import Entity.*;
 import Entity.Enemies.*;
+import Main.GamePanel;
 import TileMap.*;
 public class Level1State extends GameState{
 	private TileMap tileMap;
@@ -41,7 +42,11 @@ public class Level1State extends GameState{
 		populateItems();
 		hud = new HUD(player);
 		explosions = new ArrayList<Explosion>();
-		bgMusic = new AudioPlayer("/Music/song.wav");
+		if(GamePanel.ninjaSlayer){
+			bgMusic = new AudioPlayer("/Music/Ninja Slayer.wav");
+		}else{
+			bgMusic = new AudioPlayer("/Music/song.wav");
+		}
 		sanic = new AudioPlayer("/Music/Green_Hill_Zone1.wav");
 	}
 	private int randEnemy(int xupper, int xlower){
@@ -104,7 +109,7 @@ public class Level1State extends GameState{
 		sanic.play();
 	}
 	public void update(){
-		if(s&&a&&n&&i&&c){
+		if(s&&a&&n&&i&&c&&!GamePanel.ninjaSlayer){
 			gottaGoFast();
 			player.setSanic();
 		}

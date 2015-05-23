@@ -33,8 +33,8 @@ public class TileMap {
 	
 	public TileMap(int tileSize){
 		this.tileSize = tileSize;
-		numRowsToDraw = GamePanel.HEIGHT / tileSize + 2;
-		numColsToDraw = GamePanel.WIDTH / tileSize + 2;
+		numRowsToDraw = GamePanel.HEIGHT*2/GamePanel.SCALE / tileSize + 2;
+		numColsToDraw = GamePanel.WIDTH*2/GamePanel.SCALE / tileSize + 2;
 		setTween(0.09);
 	}
 	public void loadTiles(String s){
@@ -100,13 +100,13 @@ public class TileMap {
 		
 		
 		
-		this.x = -x + 160;
-		this.y = -y + 120;
+		this.x = (-x + 160);
+		this.y = (-y + 120);
 		
 				
 		fixBounds();
-		colOffset = (int)-this.x / tileSize;
-		rowOffset = (int)-this.y / tileSize;
+		colOffset = ((int)-this.x / tileSize);
+		rowOffset = ((int)-this.y / tileSize);
 		
 	}
 	private void fixBounds(){
@@ -125,7 +125,8 @@ public class TileMap {
 				int rc = map[row][col];
 				int r = rc/numTilesAcross;
 				int c = rc%numTilesAcross;
-				g.drawImage(tiles[r][c].getImage(), (int)x + col*tileSize, (int)y + row*tileSize, null);
+				g.drawImage(tiles[r][c].getImage(), ((int)x + col*tileSize)*2/GamePanel.SCALE, ((int)y + row*tileSize)*2/GamePanel.SCALE, 
+						tileSize*2/GamePanel.SCALE, tileSize*2/GamePanel.SCALE, null);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package Entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import Main.GamePanel;
 import TileMap.Tile;
 import TileMap.TileMap;
 
@@ -100,7 +101,7 @@ public abstract class MapObject {
 			if(bottomLeft || bottomRight) {
 				dy = 0;
 				falling = false;
-				ytemp = (currRow + 1) * tileSize - cheight / 2;
+				ytemp = (currRow+1) * tileSize - cheight/2;
 			}
 			else {
 				
@@ -189,9 +190,15 @@ public abstract class MapObject {
 	
 	public void draw(Graphics2D g){
 		if(facingRight){
-			g.drawImage(animation.getImage(), (int)(x+xmap-width/2), (int)(y+ymap-height/2), null);
+			g.drawImage(animation.getImage(), (int)(x+xmap-width/2)*2/GamePanel.SCALE, 
+											  (int)(y+ymap-height/2)*2/GamePanel.SCALE, 
+											  width*2/GamePanel.SCALE, 
+											  height*2/GamePanel.SCALE, null);
 		}else{
-			g.drawImage(animation.getImage(), (int)(x+xmap-width/2+width), (int)(y+ymap-height/2), -width, height, null);
+			g.drawImage(animation.getImage(), (int)(x+xmap-width/2+width)*2/GamePanel.SCALE, 
+											  (int)(y+ymap-height/2)*2/GamePanel.SCALE, 
+											  -width*2/GamePanel.SCALE, 
+											  height*2/GamePanel.SCALE, null);
 		}
 	}
 }

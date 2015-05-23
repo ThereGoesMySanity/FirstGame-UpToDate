@@ -36,8 +36,8 @@ public class Background {
 	}
 	
 	public void setVector(double dx, double dy) {
-		this.dx = dx;
-		this.dy = dy;
+		this.dx = dx*2/GamePanel.SCALE;
+		this.dy = dy*2/GamePanel.SCALE;
 	}
 	
 	public void update() {
@@ -47,19 +47,23 @@ public class Background {
 	
 	public void draw(Graphics2D g) {
 		
-		g.drawImage(image, (int)x, (int)y, null);
+		g.drawImage(image, (int)x, (int)y, GamePanel.WIDTH, GamePanel.HEIGHT, null);
 		
 		if(x < 0) {
 			g.drawImage(
 					image,
 					(int)x%GamePanel.WIDTH,
 					(int)y,
+					GamePanel.WIDTH,
+					GamePanel.HEIGHT,
 					null
 				);
 				g.drawImage(
 						image,
 						(int)x%GamePanel.WIDTH+GamePanel.WIDTH,
 						(int)y,
+						GamePanel.WIDTH,
+						GamePanel.HEIGHT,
 						null
 				);
 		}
@@ -68,12 +72,16 @@ public class Background {
 				image,
 				(int)x%GamePanel.WIDTH,
 				(int)y,
+				GamePanel.WIDTH,
+				GamePanel.HEIGHT,
 				null
 			);
 			g.drawImage(
 					image,
 					(int)x%GamePanel.WIDTH-GamePanel.WIDTH,
 					(int)y,
+					GamePanel.WIDTH,
+					GamePanel.HEIGHT,
 					null
 			);
 			

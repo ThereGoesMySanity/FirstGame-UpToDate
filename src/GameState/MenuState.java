@@ -1,12 +1,16 @@
 package GameState;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import Audio.AudioPlayer;
 import Main.GamePanel;
-import TileMap.*;
+import TileMap.Background;
 
 public class MenuState extends GameState{
 
@@ -22,33 +26,42 @@ public class MenuState extends GameState{
 	private Font titleFont;
 	private BufferedImage image;
 	private BufferedImage loading;
-	
+	private BufferedImage logo;
+	private AudioPlayer bgMusic;
 	public MenuState(GameStateManager gsm){
 		this.gsm = gsm;
 		try{
+			logo = ImageIO.read(getClass().getResourceAsStream("/GUI/NS_Logo.png"));
 			loading = ImageIO.read(getClass().getResourceAsStream("/Background/loading.png"));
-			image = ImageIO.read(getClass().getResourceAsStream("/Sprites/ThrowingStar1.png"));
+			image = ImageIO.read(getClass().getResourceAsStream("/Sprites/ThrowingStar1grey.png"));
 			bg = new Background("/Background/menubgmod.png", 1);
 			bg.setVector(5, 0);
+			bgMusic = new AudioPlayer("/Music/BACK IN BLACK - BOOM BOOM SATELITES.wav");
 			titleColor = new Color (128, 0, 0);
-			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 28);
+			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 56/GamePanel.SCALE);
 		}catch(Exception e){e.printStackTrace();}
 		
 	}
 	public void init(){}
 	public void update(){
 		bg.update();
+		if(GamePanel.ninjaSlayer&&!bgMusic.isRunning()){
+			bgMusic.play();
+		}
 	}
 	public void draw(Graphics2D g){
 		
 		bg.draw(g);
 		g.setColor(titleColor);
 		g.setFont(titleFont);
-		FontMetrics fm = g.getFontMetrics();
-        int x = ((320 - fm.stringWidth("Ninja Game")) / 2);
-        int y = ((240 - fm.getHeight()) / 2) + fm.getAscent();
-		g.drawString("Ninja Game", x, y-32);
-		
+		if(GamePanel.ninjaSlayer){
+			g.drawImage(logo, 100, 64, 440, 140, null);
+		}else{
+			FontMetrics fm = g.getFontMetrics();
+			int x = ((GamePanel.WIDTH - fm.stringWidth("Ninja Game")) / 2);
+			int y = fm.getHeight();
+			g.drawString("Ninja Game", x, y+32);
+		}
 		g.setFont(titleFont);
 		for(int i = 0; i < options.length; i++){
 			if(i==currentChoice){
@@ -56,11 +69,15 @@ public class MenuState extends GameState{
 			}else{
 				g.setColor(Color.WHITE);
 			}
-			g.drawString(options[i], 180, 140 + i*30);
-			g.drawImage(image, 160, 122+currentChoice*30, null);
+			g.drawString(options[i], 360/GamePanel.SCALE, 280/GamePanel.SCALE + i*60/GamePanel.SCALE);
+			g.drawImage(image, GamePanel.WIDTH/2, (244/GamePanel.SCALE)+currentChoice*60/GamePanel.SCALE,
+					image.getWidth()*2/GamePanel.SCALE, image.getHeight()*2/GamePanel.SCALE, null);
 		}
 	}
 	private void select(){
+		if(GamePanel.ninjaSlayer){
+			bgMusic.stop();
+		}
 		switch(currentChoice){
 		case 0:
 			GamePanel.drawImage(loading);

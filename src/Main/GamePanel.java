@@ -8,21 +8,23 @@ import javax.swing.JPanel;
 import GameState.GameStateManager;
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel implements Runnable, KeyListener{
-	public static final int WIDTH = 320;
-	public static final int HEIGHT = 240;
-	public static final int SCALE = 2;
+	public static final int SCALE = 1;
+	public static final int WIDTH = 640/SCALE;
+	public static final int HEIGHT = 480/SCALE;
+	
 	private Thread thread;
 	private boolean running;
 	public static int FPS = 60;
 	private long targetTime = 1000/FPS;
 	private BufferedImage image;
 	public static Graphics2D g;
+	public static boolean ninjaSlayer = true;
 	
 	private GameStateManager gsm;
 	
 	public GamePanel() {
 		super();
-		setPreferredSize(new Dimension(WIDTH*SCALE, HEIGHT*SCALE));
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
 		requestFocus();
 	}
@@ -66,7 +68,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gsm.update();
 	}
 	public static void drawImage(BufferedImage i){
-		g.drawImage(i, 0, 0, null);
+		g.drawImage(i, 0, 0, WIDTH, HEIGHT, null);
 	}
 	private void draw(){gsm.draw(g);}
 	private void drawToScreen(){

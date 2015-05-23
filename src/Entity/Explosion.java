@@ -2,7 +2,10 @@ package Entity;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+
 import javax.imageio.ImageIO;
+
+import Main.GamePanel;
 
 public class Explosion {
 	
@@ -73,8 +76,10 @@ public class Explosion {
 	public void draw(Graphics2D g) {
 		g.drawImage(
 			animation.getImage(),
-			x + xmap - width / 2,
-			y + ymap - height / 2,
+			(x + xmap - width / 2)*2/GamePanel.SCALE,
+			(y + ymap - height / 2)*2/GamePanel.SCALE,
+			width*2/GamePanel.SCALE,
+			height*2/GamePanel.SCALE,
 			null
 		);
 	}

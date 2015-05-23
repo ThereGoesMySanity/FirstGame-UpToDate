@@ -8,6 +8,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import Audio.AudioPlayer;
+import Main.GamePanel;
 import TileMap.TileMap;
 public class Player extends MapObject {
 	public static boolean glitch;
@@ -85,7 +86,7 @@ public class Player extends MapObject {
 		maxFallSpeed = 999;
 		stopJumpSpeed = 3;
 		health = maxHealth = 25;
-		bullet = maxBullets = 1997;
+		bullet = maxBullets = 2000;
 		bulletCost = 50;
 		bulletDamage = 1;
 		currentItems = new boolean[Item.NUM_ITEMS];
@@ -95,14 +96,20 @@ public class Player extends MapObject {
 		sfx.put("sanicHit", new AudioPlayer("/SFX/sonic017.wav"));
 		sfx.put("sanicSlow", new AudioPlayer("/SFX/sonic005.wav"));
 		sfx.put("sanicStep", new AudioPlayer("/SFX/sonic006.wav"));
+		sfx.put("YEEART", new AudioPlayer("/SFX/YEEART.wav"));
 		try{
 			BufferedImage spritesheet = ImageIO.read(getClass()
 					.getResourceAsStream("/Sprites/Player.png"));
+			BufferedImage ninjaSlayer = ImageIO.read(getClass()
+					.getResourceAsStream("/Sprites/Ninja Slayer.png"));
 			sprites = new ArrayList<BufferedImage[]>();
 			for(int i=0; i<4; i++){
 				BufferedImage[] bi = new BufferedImage[numFrames[i]];
 				for(int j = 0; j<numFrames[i]; j++){
-					if(i!=3){
+					if(GamePanel.ninjaSlayer){
+						bi[j] = ninjaSlayer;
+					}
+					else if(i!=3){
 						bi[j] = spritesheet.getSubimage(
 								j*width, i*height, width, height);
 					}else{
@@ -113,6 +120,7 @@ public class Player extends MapObject {
 				}
 				sprites.add(bi);
 			}
+			
 
 		}catch(Exception e){e.printStackTrace();}
 		animation = new Animation();
@@ -145,7 +153,6 @@ public class Player extends MapObject {
 		if(currentAction == SHOOTING && animation.hasPlayedOnce())firing = false;
 		bullet += 7;
 		if(bullet>maxBullets)bullet = maxBullets;
-
 		if (firing){
 			if(sanic&&!sanicDischarge){
 				if(bullet<bulletCost){
@@ -167,8 +174,11 @@ public class Player extends MapObject {
 			}
 			if(!prevFiring){
 				prevFiring = true;
+				if(GamePanel.ninjaSlayer){
+					sfx.get("YEEART").play();
+				}
 			}
-			if(bullet>bulletCost&&modTime%2==0){
+			if(bullet>bulletCost&&modTime%4==0){
 				bullet -= bulletCost;
 				if(currentItems[Item.THREEWAY]){
 					bullet -= bulletCost;

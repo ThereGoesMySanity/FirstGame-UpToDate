@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import Main.GamePanel;
 import TileMap.Background;
 
 public class GameOver extends GameState {
@@ -25,31 +26,33 @@ public class GameOver extends GameState {
 	public void init() {
 		
 		try{
-			image = ImageIO.read(getClass().getResourceAsStream("/Sprites/ThrowingStar1.png"));
+			image = ImageIO.read(getClass().getResourceAsStream("/Sprites/ThrowingStar1grey.png"));
 			bg = new Background("/Background/menubgmod.png", 0);
 		}catch(Exception e){e.printStackTrace();}
-		font = new Font("Fixedsys", Font.TRUETYPE_FONT, 24);
+		font = new Font("Fixedsys", Font.TRUETYPE_FONT, 48/GamePanel.SCALE);
 	}
 
 	public void update() {}
 
 	public void draw(Graphics2D g) {
 		bg.draw(g);
-		g.setColor(Color.MAGENTA);
+		g.setColor(Color.RED);
 		g.setFont(font);
 		FontMetrics fm = g.getFontMetrics();
-        int x = ((320 - fm.stringWidth("Game Over")) / 2);
-		g.drawString("Game Over", x, 32);
+        int x = ((GamePanel.WIDTH - fm.stringWidth("Game Over")) / 2);
+		g.drawString("Game Over", x, 64/GamePanel.SCALE);
 		for(int i = 0; i<options.length; i++){
-			x = ((320 - fm.stringWidth(options[i])) / 2);
+			x = ((GamePanel.WIDTH - fm.stringWidth(options[i])) / 2);
 			if(i==currentChoice){
 				g.setColor(Color.DARK_GRAY);
 			}else{
 				g.setColor(Color.WHITE);
 			}
 			
-			g.drawString(options[i], x, 100+(32*i));
-			g.drawImage(image, 140-(fm.stringWidth(options[currentChoice])/2), 82+currentChoice*32, null);
+			g.drawString(options[i], x, 200/GamePanel.SCALE+(64/GamePanel.SCALE*i));
+			g.drawImage(image, 280/GamePanel.SCALE-(fm.stringWidth(options[currentChoice])/2), 
+					164/GamePanel.SCALE+currentChoice*64/GamePanel.SCALE,
+					image.getWidth()*2/GamePanel.SCALE, image.getHeight()*2/GamePanel.SCALE, null);
 		}
 	}
 

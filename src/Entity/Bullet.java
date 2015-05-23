@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
+import Main.GamePanel;
 import TileMap.*;
 
 public class Bullet extends MapObject{
@@ -91,10 +92,10 @@ public class Bullet extends MapObject{
 	public void draw(Graphics2D g){
 		setMapPosition();
 		g.drawImage(animation.getImage(), 
-				(int)(x+xmap-width/2), 
-				(int)(y+ymap-height/2),
-				width,
-				height,
+				(int)(x+xmap-width/2)*2/GamePanel.SCALE, 
+				(int)(y+ymap-height/2)*2/GamePanel.SCALE,
+				width*2/GamePanel.SCALE,
+				height*2/GamePanel.SCALE,
 				null);
 	}
 	public static void setStar(String s) {
