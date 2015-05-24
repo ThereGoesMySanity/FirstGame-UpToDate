@@ -37,6 +37,7 @@ public class MenuState extends GameState{
 			bg = new Background("/Background/menubgmod.png", 1);
 			bg.setVector(5, 0);
 			bgMusic = new AudioPlayer("/Music/BACK IN BLACK - BOOM BOOM SATELITES.wav");
+			bgMusic.setVolume(-10);
 			titleColor = new Color (128, 0, 0);
 			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 56/GamePanel.SCALE);
 		}catch(Exception e){e.printStackTrace();}

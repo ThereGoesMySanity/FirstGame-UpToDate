@@ -33,8 +33,8 @@ public class TileMap {
 	
 	public TileMap(int tileSize){
 		this.tileSize = tileSize;
-		numRowsToDraw = GamePanel.HEIGHT*2/GamePanel.SCALE / tileSize + 2;
-		numColsToDraw = GamePanel.WIDTH*2/GamePanel.SCALE / tileSize + 2;
+		numRowsToDraw = GamePanel.WIDTH / tileSize + 2;
+		numColsToDraw = GamePanel.HEIGHT / tileSize + 2;
 		setTween(0.09);
 	}
 	public void loadTiles(String s){
@@ -66,9 +66,9 @@ public class TileMap {
 			height = numRows*tileSize;
 
 			
-			xmin = GamePanel.WIDTH - width;
+			xmin = 320 - width;
 			xmax = 0;
-			ymin = GamePanel.HEIGHT - height;
+			ymin = 240 - height;
 			ymax = 0;
 			
 			String delims = "\\s+";
@@ -119,8 +119,14 @@ public class TileMap {
 	public void draw(Graphics2D g){
 		for(int row = rowOffset; row<rowOffset + numRowsToDraw; row++){
 			for(int col=colOffset; col<colOffset+numColsToDraw; col++){
-				if(row>=numRows)break;
-				if(col>=numCols)break;
+				if(row>=numRows){
+					System.out.println("1");
+					break;
+				}
+				if(col>=numCols){
+					System.out.println(numCols);
+					break;
+				}
 				
 				int rc = map[row][col];
 				int r = rc/numTilesAcross;

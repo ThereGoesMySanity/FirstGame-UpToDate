@@ -3,8 +3,7 @@ package Entity;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
-
+import GameState.Level1State;
 import Main.GamePanel;
 
 public class Explosion {
@@ -14,14 +13,13 @@ public class Explosion {
 	private int xmap;
 	private int ymap;
 	
-	private int width;
-	private int height;
+	public static int width;
+	public static int height;
 	
 	private Animation animation;
 	private BufferedImage[] sprites;
 	
 	private boolean remove;
-	
 	public Explosion(int x, int y) {
 		
 		this.x = x;
@@ -29,30 +27,7 @@ public class Explosion {
 		
 		width = 30;
 		height = 30;
-		
-		try {
-			
-			BufferedImage spritesheet = ImageIO.read(
-				getClass().getResourceAsStream(
-					"/Sprites/explosion.gif"
-				)
-			);
-			
-			sprites = new BufferedImage[6];
-			for(int i = 0; i < sprites.length; i++) {
-				sprites[i] = spritesheet.getSubimage(
-					i * width,
-					0,
-					width,
-					height
-				);
-			}
-			
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		
+		sprites = Level1State.explosionSprites;
 		animation = new Animation();
 		animation.setFrames(sprites);
 		animation.setDelay(70);
@@ -74,16 +49,24 @@ public class Explosion {
 	}
 	
 	public void draw(Graphics2D g) {
-		g.drawImage(
-			animation.getImage(),
-			(x + xmap - width / 2)*2/GamePanel.SCALE,
-			(y + ymap - height / 2)*2/GamePanel.SCALE,
-			width*2/GamePanel.SCALE,
-			height*2/GamePanel.SCALE,
-			null
-		);
+		if(GamePanel.ninjaSlayer){
+			g.drawImage(
+					animation.getImage(),
+					(x + xmap - width)*2/GamePanel.SCALE,
+					(y + ymap - height)*2/GamePanel.SCALE,
+					width*4/GamePanel.SCALE,
+					height*4/GamePanel.SCALE,
+					null);
+		}else{
+			g.drawImage(
+				animation.getImage(),
+				(x + xmap - width / 2)*2/GamePanel.SCALE,
+				(y + ymap - height / 2)*2/GamePanel.SCALE,
+				width*2/GamePanel.SCALE,
+				height*2/GamePanel.SCALE,
+				null);
+		}
 	}
-	
 }
 
 

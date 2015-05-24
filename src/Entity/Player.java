@@ -97,6 +97,7 @@ public class Player extends MapObject {
 		sfx.put("sanicSlow", new AudioPlayer("/SFX/sonic005.wav"));
 		sfx.put("sanicStep", new AudioPlayer("/SFX/sonic006.wav"));
 		sfx.put("YEEART", new AudioPlayer("/SFX/YEEART.wav"));
+		sfx.get("YEEART").setVolume(-5);
 		try{
 			BufferedImage spritesheet = ImageIO.read(getClass()
 					.getResourceAsStream("/Sprites/Player.png"));
@@ -120,7 +121,7 @@ public class Player extends MapObject {
 				}
 				sprites.add(bi);
 			}
-			
+
 
 		}catch(Exception e){e.printStackTrace();}
 		animation = new Animation();
@@ -151,7 +152,9 @@ public class Player extends MapObject {
 			dead = true;
 		}
 		if(currentAction == SHOOTING && animation.hasPlayedOnce())firing = false;
-		bullet += 7;
+		if(modTime%4==0){
+			bullet += 14;
+		}
 		if(bullet>maxBullets)bullet = maxBullets;
 		if (firing){
 			if(sanic&&!sanicDischarge){
@@ -186,36 +189,36 @@ public class Player extends MapObject {
 						bullet -= 2*bulletCost;
 					}
 				}
-				if(!sanic){
-					Bullet b = new Bullet(tileMap, facingRight, currentItems);
-					b.setPosition(x, y);
-					bullets.add(b);
-					if(currentItems[Item.THREEWAY]){
-						boolean[] top = new boolean[Item.NUM_ITEMS];
-						boolean[] bottom = new boolean[Item.NUM_ITEMS];
-						top[0] = bottom[2] = true;
-						top [1] = top[2] = bottom[0] = bottom[1] = false;
-						System.arraycopy(
-								currentItems, 3, top, 3, Item.NUM_ITEMS-3);
-						System.arraycopy(
-								currentItems, 3, bottom, 3, Item.NUM_ITEMS-3);
-						Bullet c = new Bullet(tileMap, facingRight, top);
-						c.setPosition(x, y);
-						bullets.add(c);
-						Bullet d = new Bullet(tileMap, facingRight, bottom);
-						d.setPosition(x, y);
-						bullets.add(d);
-						if(currentItems[Item.TWENTY_TWENTY]){
-							Bullet e = new Bullet(
-									tileMap, facingRight, top);
-							e.setPosition(x, y+5);
-							bullets.add(e);
-							Bullet f = new Bullet(
-									tileMap, facingRight, bottom);
-							f.setPosition(x, y-5);
-							bullets.add(f);
-						}
+
+				Bullet b = new Bullet(tileMap, facingRight, currentItems);
+				b.setPosition(x, y);
+				bullets.add(b);
+				if(currentItems[Item.THREEWAY]){
+					boolean[] top = new boolean[Item.NUM_ITEMS];
+					boolean[] bottom = new boolean[Item.NUM_ITEMS];
+					top[0] = bottom[2] = true;
+					top [1] = top[2] = bottom[0] = bottom[1] = false;
+					System.arraycopy(
+							currentItems, 3, top, 3, Item.NUM_ITEMS-3);
+					System.arraycopy(
+							currentItems, 3, bottom, 3, Item.NUM_ITEMS-3);
+					Bullet c = new Bullet(tileMap, facingRight, top);
+					c.setPosition(x, y);
+					bullets.add(c);
+					Bullet d = new Bullet(tileMap, facingRight, bottom);
+					d.setPosition(x, y);
+					bullets.add(d);
+					if(currentItems[Item.TWENTY_TWENTY]){
+						Bullet e = new Bullet(
+								tileMap, facingRight, top);
+						e.setPosition(x, y+5);
+						bullets.add(e);
+						Bullet f = new Bullet(
+								tileMap, facingRight, bottom);
+						f.setPosition(x, y-5);
+						bullets.add(f);
 					}
+
 					if(currentItems[Item.TWENTY_TWENTY]){
 						Bullet e = new Bullet(tileMap, facingRight, currentItems);
 						e.setPosition(x, y+5);
@@ -338,7 +341,7 @@ public class Player extends MapObject {
 
 		// falling
 		if(falling) {
-			
+
 			dy += fallSpeed;
 
 			if(dy > 0) jumping = false;

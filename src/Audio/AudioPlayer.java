@@ -7,7 +7,7 @@ import javax.sound.sampled.*;
 
 public class AudioPlayer {
 	private Clip clip;
-
+	private FloatControl volume;
 	public AudioPlayer(String s){
 		try{
 			InputStream is = getClass().getResourceAsStream(s);
@@ -25,13 +25,18 @@ public class AudioPlayer {
 			AudioInputStream dais = AudioSystem.getAudioInputStream(decodeFormat, ais);
 			clip = AudioSystem.getClip();
 			clip.open(dais);
+			volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 		}catch(Exception e){e.printStackTrace();}
 	}
 	public void play(){
 		if(clip == null||clip.isRunning())return;
 		stop();
 		clip.setFramePosition(0);
+		
 		clip.start();
+	}
+	public void setVolume(float f){
+		volume.setValue(f);
 	}
 	public void stop(){
 		if(clip.isRunning())clip.stop();

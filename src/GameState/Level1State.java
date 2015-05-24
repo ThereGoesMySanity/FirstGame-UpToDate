@@ -1,7 +1,10 @@
 package GameState;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import Audio.AudioPlayer;
 import Entity.*;
@@ -14,6 +17,7 @@ public class Level1State extends GameState{
 	private ArrayList<Enemy> enemies;
 	private ArrayList<Item> items;
 	private ArrayList<Explosion> explosions;
+	public static BufferedImage[] explosionSprites;
 	private HUD hud;
 	public FlyingNinja bob;
 	private Background background;
@@ -40,6 +44,7 @@ public class Level1State extends GameState{
 		player.setPosition(100, -100);
 		populateEnemies();
 		populateItems();
+		loadSprites();
 		hud = new HUD(player);
 		explosions = new ArrayList<Explosion>();
 		if(GamePanel.ninjaSlayer){
@@ -47,7 +52,34 @@ public class Level1State extends GameState{
 		}else{
 			bgMusic = new AudioPlayer("/Music/song.wav");
 		}
+		bgMusic.setVolume(-10);
 		sanic = new AudioPlayer("/Music/Green_Hill_Zone1.wav");
+		sanic.setVolume(-10);
+	}
+	
+	public void loadSprites(){
+		try {
+			if(GamePanel.ninjaSlayer){
+				explosionSprites = new BufferedImage[18];
+				for(int i = 0; i < 18; i++){
+					explosionSprites[i] = ImageIO.read(getClass().getResourceAsStream("/Sprites/frame_" + String.format("%06d", i+1) + ".png"));
+				}
+			}else{
+				BufferedImage spritesheet = ImageIO.read(
+						getClass().getResourceAsStream(
+								"/Sprites/explosion.gif"));
+
+				explosionSprites = new BufferedImage[6];
+				for(int i = 0; i < explosionSprites.length; i++) {
+					explosionSprites[i] = spritesheet.getSubimage(
+							i * Explosion.width,
+							0,
+							Explosion.width,
+							Explosion.height
+							);
+				}
+			}
+		}catch(Exception e){e.printStackTrace();}
 	}
 	private int randEnemy(int xupper, int xlower){
 		return (int)(Math.random()*(xupper-xlower))+xlower;
