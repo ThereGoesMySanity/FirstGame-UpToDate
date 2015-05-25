@@ -3,52 +3,16 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import Audio.AudioPlayer;
+import Audio.JukeBox;
 import Main.GamePanel;
 import TileMap.TileMap;
 public class Player extends MapObject {
 	public static boolean glitch;
 	public boolean sanic;
 	private boolean sanicd;
-	private HashMap<String, AudioPlayer> sfx;
-
-	public void setSanic(){
-		sanic = true;
-		if(!sanicd){
-			try{
-				BufferedImage spritesheet = ImageIO.read(
-						getClass().getResourceAsStream("/Sprites/Sanic.png"));
-				sprites = new ArrayList<BufferedImage[]>();
-				for(int i=0; i<4; i++){
-					BufferedImage[] bi = new BufferedImage[numFrames[i]];
-					for(int j = 0; j<numFrames[i]; j++){
-						if(i!=3){
-							bi[j] = spritesheet.getSubimage(
-									j*width, i*height, width, height);
-						}else{
-							bi[j] = spritesheet.getSubimage(
-									j*2*width, i*height, width, height);
-						}			
-					}
-					sprites.add(bi);
-				}
-			}catch(Exception e){e.printStackTrace();}
-			sanicd = true;
-		}
-	}
-	public boolean isSanic(){
-		return sanic;
-	}
-	public static void setGlitch(boolean g) {
-		glitch = g;
-	}
-	public static boolean isGlitch(){
-		return glitch;
-	}
 	private int maxHealth;
 	private int bullet;
 	private int maxBullets;
@@ -92,12 +56,11 @@ public class Player extends MapObject {
 		currentItems = new boolean[Item.NUM_ITEMS];
 		Arrays.fill(currentItems, false);
 		bullets = new ArrayList<Bullet>();
-		sfx = new HashMap<String, AudioPlayer>();
-		sfx.put("sanicHit", new AudioPlayer("/SFX/sonic017.wav"));
-		sfx.put("sanicSlow", new AudioPlayer("/SFX/sonic005.wav"));
-		sfx.put("sanicStep", new AudioPlayer("/SFX/sonic006.wav"));
-		sfx.put("YEEART", new AudioPlayer("/SFX/YEEART.wav"));
-		sfx.get("YEEART").setVolume(-5);
+		JukeBox.load("/SFX/sonic017.wav", "sanicHit");
+		JukeBox.load("/SFX/sonic005.wav", "sanicSlow");
+		JukeBox.load("/SFX/sonic006.wav", "sanicStep");
+		JukeBox.load("/SFX/YEEART.wav", "YEEART");
+		JukeBox.setVolume("YEEART", -5);
 		try{
 			BufferedImage spritesheet = ImageIO.read(getClass()
 					.getResourceAsStream("/Sprites/Player.png"));
@@ -178,7 +141,7 @@ public class Player extends MapObject {
 			if(!prevFiring){
 				prevFiring = true;
 				if(GamePanel.ninjaSlayer){
-					sfx.get("YEEART").play();
+					JukeBox.play("YEEART");
 				}
 			}
 			if(bullet>bulletCost&&modTime%4==0){
@@ -218,12 +181,11 @@ public class Player extends MapObject {
 						f.setPosition(x, y-5);
 						bullets.add(f);
 					}
-
-					if(currentItems[Item.TWENTY_TWENTY]){
-						Bullet e = new Bullet(tileMap, facingRight, currentItems);
-						e.setPosition(x, y+5);
-						bullets.add(e);
-					}
+				}
+				if(currentItems[Item.TWENTY_TWENTY]){
+					Bullet e = new Bullet(tileMap, facingRight, currentItems);
+					e.setPosition(x, y+5);
+					bullets.add(e);
 				}
 			}
 		}else if(prevFiring){
@@ -259,8 +221,8 @@ public class Player extends MapObject {
 			if(currentAction != RUNNING){
 				if(sanic){
 					int sanicRand = (int) (Math.random()*8);
-					if(sanicRand == 3)sfx.get("sanicSlow").play();
-					if(sanicRand == 7)sfx.get("sanicStep").play();
+					if(sanicRand == 3)JukeBox.play("sanicSlow");
+					if(sanicRand == 7)JukeBox.play("sanicStep");
 				}
 				currentAction = RUNNING;
 				animation.setFrames(sprites.get(RUNNING));
@@ -363,9 +325,6 @@ public class Player extends MapObject {
 		if(flinchTime%4 == 0||flinchTime%4==1){
 			super.draw(g);
 		}
-		if(sanicCharge>0){
-			g.drawString(String.valueOf((int)(sanicCharge)), 10, 10);
-		}
 	}
 	public void checkAttack(ArrayList<Enemy> enemies){
 		for(int i = 0; i<enemies.size(); i++){
@@ -380,7 +339,7 @@ public class Player extends MapObject {
 				if(!((jumping||falling)&&sanic)){
 					hit(e.getDamage());
 					if(sanic){
-						sfx.get("sanicHit").play();
+						JukeBox.play("sanicHit");
 					}
 				}else if(sanic&&(jumping||falling||sanicDischarge)){
 					e.hit(100);
@@ -396,6 +355,39 @@ public class Player extends MapObject {
 				currentItems[it.getItem()] = true;
 			}
 		}
+	}
+	public void setSanic(){
+		sanic = true;
+		if(!sanicd){
+			try{
+				BufferedImage spritesheet = ImageIO.read(
+						getClass().getResourceAsStream("/Sprites/Sanic.png"));
+				sprites = new ArrayList<BufferedImage[]>();
+				for(int i=0; i<4; i++){
+					BufferedImage[] bi = new BufferedImage[numFrames[i]];
+					for(int j = 0; j<numFrames[i]; j++){
+						if(i!=3){
+							bi[j] = spritesheet.getSubimage(
+									j*width, i*height, width, height);
+						}else{
+							bi[j] = spritesheet.getSubimage(
+									j*2*width, i*height, width, height);
+						}			
+					}
+					sprites.add(bi);
+				}
+			}catch(Exception e){e.printStackTrace();}
+			sanicd = true;
+		}
+	}
+	public boolean isSanic(){
+		return sanic;
+	}
+	public static void setGlitch(boolean g) {
+		glitch = g;
+	}
+	public static boolean isGlitch(){
+		return glitch;
 	}
 	public void hit(int damage){
 		if(flinching)return;

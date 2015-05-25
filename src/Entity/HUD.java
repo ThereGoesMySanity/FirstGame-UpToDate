@@ -55,6 +55,5 @@ public class HUD {
 		}else if(btCooldownTimer == 6){
 			btCooldownTimer = 0;
 		}
-		g.drawString(player.getx() + ", " + player.gety(), 160, 50);
 	}
 }

@@ -1,8 +1,10 @@
 package GameState;
 import java.awt.Graphics2D;
+
+import Audio.JukeBox;
 public class GameStateManager {
-	private GameState[] gameStates;
-	private int currentState;
+	public static GameState[] gameStates;
+	public static int currentState;
 	public boolean bulletTime;
 	public long btTime;
 	public static long btTimer;
@@ -14,6 +16,7 @@ public class GameStateManager {
 	public static final int GAMEOVER = 3;
 	
 	public GameStateManager(){
+		JukeBox.init();
 		gameStates = new GameState[NUMGAMESTATES];
 		currentState = MENUSTATE;
 		loadState(currentState);

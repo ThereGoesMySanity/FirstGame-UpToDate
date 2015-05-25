@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import Entity.Bullet;
 import Entity.Player;
+import Main.GamePanel;
 import TileMap.Background;
 
 public class OptionsState extends GameState {
@@ -48,8 +49,8 @@ public class OptionsState extends GameState {
 			bg = new Background("/Background/menubgmod.png", 1);
 			bg.setVector(5, 0);
 			titleColor = new Color (128, 0, 0);
-			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 28);
-			font = new Font("Fixedsys", Font.TRUETYPE_FONT, 16);
+			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 28*2/GamePanel.SCALE);
+			font = new Font("Fixedsys", Font.TRUETYPE_FONT, 16*2/GamePanel.SCALE);
 		}catch(Exception e){e.printStackTrace();}
 		
 	}
@@ -71,9 +72,9 @@ public class OptionsState extends GameState {
 		g.setColor(titleColor);
 		g.setFont(titleFont);
 		FontMetrics fm = g.getFontMetrics();
-        int x = ((320 - fm.stringWidth("Options")) / 2);
-        int y = ((240 - fm.getHeight()) / 2) + fm.getAscent();
-		g.drawString("Options", x, y-64);
+        int x = ((320*2/GamePanel.SCALE - fm.stringWidth("Options")) / 2);
+        int y = ((240*2/GamePanel.SCALE - fm.getHeight()) / 2) + fm.getAscent();
+		g.drawString("Options", x, y-64*2/GamePanel.SCALE);
 		g.setFont(font);
 		options[0] = "Glitches: " + Boolean.toString(glitches);
 		options[2] = "Throwing Star Color: " + starsColorRefined[starsChoice];
@@ -83,8 +84,8 @@ public class OptionsState extends GameState {
 			}else{
 				g.setColor(Color.WHITE);
 			}
-			g.drawString(options[i], 100, 100 + i*30);
-			g.drawImage(image, 80, 82+currentChoice*30, null);
+			g.drawString(options[i], 200/GamePanel.SCALE, 200 + i*60);
+			g.drawImage(image, 160/GamePanel.SCALE, 164+currentChoice*60, null);
 		}
 
 	}

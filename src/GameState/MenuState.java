@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import Audio.AudioPlayer;
+import Audio.JukeBox;
 import Main.GamePanel;
 import TileMap.Background;
 
@@ -27,17 +27,23 @@ public class MenuState extends GameState{
 	private BufferedImage image;
 	private BufferedImage loading;
 	private BufferedImage logo;
-	private AudioPlayer bgMusic;
 	public MenuState(GameStateManager gsm){
 		this.gsm = gsm;
 		try{
-			logo = ImageIO.read(getClass().getResourceAsStream("/GUI/NS_Logo.png"));
 			loading = ImageIO.read(getClass().getResourceAsStream("/Background/loading.png"));
+			logo = ImageIO.read(getClass().getResourceAsStream("/GUI/NS_Logo.png"));
 			image = ImageIO.read(getClass().getResourceAsStream("/Sprites/ThrowingStar1grey.png"));
 			bg = new Background("/Background/menubgmod.png", 1);
 			bg.setVector(5, 0);
-			bgMusic = new AudioPlayer("/Music/BACK IN BLACK - BOOM BOOM SATELITES.mp3");
-			bgMusic.setVolume(-10);
+			JukeBox.load("/Music/song.wav", "menu");
+			JukeBox.load("/Music/Back_In_Black.mp3", "menuNinja");
+			if(GamePanel.ninjaSlayer){
+				JukeBox.loop("menuNinja");
+				JukeBox.setVolume("menuNinja", -10);
+			}else{
+				JukeBox.loop("menu");
+			}
+			
 			titleColor = new Color (128, 0, 0);
 			titleFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 56/GamePanel.SCALE);
 		}catch(Exception e){e.printStackTrace();}
@@ -46,9 +52,6 @@ public class MenuState extends GameState{
 	public void init(){}
 	public void update(){
 		bg.update();
-		if(GamePanel.ninjaSlayer&&!bgMusic.isRunning()){
-			bgMusic.play();
-		}
 	}
 	public void draw(Graphics2D g){
 		
@@ -77,7 +80,7 @@ public class MenuState extends GameState{
 	}
 	private void select(){
 		if(GamePanel.ninjaSlayer){
-			bgMusic.stop();
+			JukeBox.stop("menuNinja");
 		}
 		switch(currentChoice){
 		case 0:

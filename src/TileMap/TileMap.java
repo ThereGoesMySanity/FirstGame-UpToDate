@@ -1,10 +1,16 @@
 package TileMap;
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 
+import Entity.Item;
+import GameState.Level1State;
 import Main.GamePanel;
 public class TileMap {
 	private double x;
@@ -70,13 +76,22 @@ public class TileMap {
 			xmax = 0;
 			ymin = 240 - height;
 			ymax = 0;
-			
+			Pattern re = Pattern.compile("i(\\d?) ");
 			String delims = "\\s+";
+			Item q;
 			for(int row = 0; row<numRows; row++){
 				String line = br.readLine();
 				String[] tokens = line.split(delims);
 				for(int col = 0; col<numCols; col++){
-					map[row][col] = Integer.parseInt(tokens[col]);
+					Matcher x = re.matcher(tokens[col]);
+					if(x.matches()){
+						map[row][col] = 0;
+						q = new Item(this, Integer.parseInt(x.group(1)));
+						q.setPosition(row*tileSize, col*tileSize);
+						Level1State.items.add(q);
+					}else{
+						map[row][col] = Integer.parseInt(tokens[col]);
+					}
 				}
 			}
 			

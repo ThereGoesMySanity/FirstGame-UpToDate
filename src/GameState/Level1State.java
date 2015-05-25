@@ -1,33 +1,51 @@
 package GameState;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import Audio.AudioPlayer;
-import Entity.*;
-import Entity.Enemies.*;
+import java.awt.FontMetrics;
+
+import Audio.JukeBox;
+import Entity.Bullet;
+import Entity.Enemy;
+import Entity.Explosion;
+import Entity.HUD;
+import Entity.Item;
+import Entity.Player;
+import Entity.Enemies.FlyingNinja;
 import Main.GamePanel;
-import TileMap.*;
+import TileMap.Background;
+import TileMap.TileMap;
 public class Level1State extends GameState{
 	private TileMap tileMap;
 	private Player player;
 	private ArrayList<Enemy> enemies;
-	private ArrayList<Item> items;
+	public static ArrayList<Item> items;
 	private ArrayList<Explosion> explosions;
 	public static BufferedImage[] explosionSprites;
 	private HUD hud;
 	public FlyingNinja bob;
 	private Background background;
-	private AudioPlayer bgMusic;
-	private AudioPlayer sanic;
 	private boolean s=false;
 	private boolean a=false;
 	private boolean n=false;
 	private boolean i=false;
 	private boolean c=false;
+	private boolean pause;
+	private Font pauseFont;
+	private int currentChoice;
+	private String[] options = new String[]{
+			"Resume",
+			"Restart",
+			"Menu",
+			"Quit"
+	};
 	public static BufferedImage[] flyingNinjaSprites_dmg;
 	public static BufferedImage[] flyingNinjaSprites;
 	public static BufferedImage[] bulletSprites;
@@ -36,30 +54,36 @@ public class Level1State extends GameState{
 		init();
 	}
 	public void init(){
-		gsm.setBTTime(30);
-		tileMap = new TileMap(16);
-		tileMap.loadTiles("/Tilesets/lvl1tilesout.png");
-		tileMap.loadMap("/Maps/level1-1.map");
-		tileMap.setPosition(0, 0);
 		background = new Background("/Background/menubgmod.png", .5);
-		background.setVector(-5, 0);
+		tileMap = new TileMap(16);
 		player = new Player(tileMap);
-		player.setPosition(100, -100);
+		hud = new HUD(player);
+		items = new ArrayList<Item>();
+		enemies = new ArrayList<Enemy>();
+		explosions = new ArrayList<Explosion>();
 		loadSprites();
 		populateEnemies();
 		populateItems();
-		hud = new HUD(player);
-		explosions = new ArrayList<Explosion>();
+		background.setVector(-5, 0);
+		tileMap.loadTiles("/Tilesets/lvl1tilesout.png");
+		tileMap.loadMap("/Maps/level1-1.map");
+		tileMap.setPosition(0, 0);
+		player.setPosition(100, 0);
+		gsm.setBTTime(30);
 		if(GamePanel.ninjaSlayer){
-			bgMusic = new AudioPlayer("/Music/Ninja Slayer.wav");
+			JukeBox.load("/Music/Ninja Slayer.mp3", "bgMusic");
 		}else{
-			bgMusic = new AudioPlayer("/Music/song.wav");
+			JukeBox.load("/Music/song.wav", "bgMusic");
 		}
-		bgMusic.setVolume(-10);
-		sanic = new AudioPlayer("/Music/Green_Hill_Zone1.wav");
-		sanic.setVolume(-10);
+		JukeBox.loop("bgMusic");
+		JukeBox.setVolume("bgMusic", -10);
+		JukeBox.load("/Music/Green_Hill_Zone1.mp3", "sanic");
+		JukeBox.setVolume("sanic", -10);
+		pauseFont = new Font("Fixedsys", Font.TRUETYPE_FONT, 56/GamePanel.SCALE);
 	}
-	
+	private void pause() {
+		pause = true;
+	}
 	public void loadSprites(){
 		try {
 			if(GamePanel.ninjaSlayer){
@@ -98,17 +122,17 @@ public class Level1State extends GameState{
 			flyingNinjaSprites = new BufferedImage[2];
 			for(int i = 0; i < flyingNinjaSprites.length; i++) {
 				flyingNinjaSprites[i] = ImageIO.read(
-				getClass().getResourceAsStream(
-					"/Sprites/Ninja_clothes.png")
-				);
+						getClass().getResourceAsStream(
+								"/Sprites/Ninja_clothes.png")
+						);
 			}
 			flyingNinjaSprites_dmg = new BufferedImage[2];
 			for(int i = 0; i < flyingNinjaSprites_dmg.length; i++) {
 				flyingNinjaSprites_dmg[i] = ImageIO.read(
-					getClass().getResourceAsStream(
-						"/Sprites/Ninja_clothes_dmg.png"
-					)
-				);
+						getClass().getResourceAsStream(
+								"/Sprites/Ninja_clothes_dmg.png"
+								)
+						);
 			}
 		}catch(Exception e){e.printStackTrace();}
 	}
@@ -116,34 +140,31 @@ public class Level1State extends GameState{
 		return (int)(Math.random()*(xupper-xlower))+xlower;
 	}
 	private void populateEnemies() {
-		
-		enemies = new ArrayList<Enemy>();
-		
 		FlyingNinja bob;
 		Point[] points = new Point[] {
-			new Point(400, randEnemy(120, 170)),
-			new Point(860, randEnemy(120, 180)),
-			new Point(1000, randEnemy(120, 180)),
-			new Point(1060, randEnemy(120, 180)),
-			new Point(1260, randEnemy(120, 180)),
-			new Point(1360, randEnemy(90, 180)),
-			new Point(1460, randEnemy(90, 180)),
-			new Point(1490, randEnemy(90, 180)),
-			new Point(1525, randEnemy(90, 180)),
-			new Point(1680, randEnemy(90, 180)),
-			new Point(1900, randEnemy(90, 180)),
-			new Point(2000, randEnemy(120, 180)),
-			new Point(2050, randEnemy(120, 180)),
-			new Point(2120, randEnemy(120, 180)),
-			new Point(2440, randEnemy(120, 180)),
-			new Point(2800, randEnemy(120, 180))
+				new Point(400, randEnemy(120, 170)),
+				new Point(860, randEnemy(120, 180)),
+				new Point(1000, randEnemy(120, 180)),
+				new Point(1060, randEnemy(120, 180)),
+				new Point(1260, randEnemy(120, 180)),
+				new Point(1360, randEnemy(90, 180)),
+				new Point(1460, randEnemy(90, 180)),
+				new Point(1490, randEnemy(90, 180)),
+				new Point(1525, randEnemy(90, 180)),
+				new Point(1680, randEnemy(90, 180)),
+				new Point(1900, randEnemy(90, 180)),
+				new Point(2000, randEnemy(120, 180)),
+				new Point(2050, randEnemy(120, 180)),
+				new Point(2120, randEnemy(120, 180)),
+				new Point(2440, randEnemy(120, 180)),
+				new Point(2800, randEnemy(120, 180))
 		};
 		for(int i = 0; i < points.length; i++) {
 			bob = new FlyingNinja(tileMap);
 			bob.setPosition(points[i].x, points[i].y);
 			enemies.add(bob);
 		}
-		
+
 	}
 	private void populateItems(){
 		items = new ArrayList<Item>();
@@ -168,25 +189,23 @@ public class Level1State extends GameState{
 		player.maxSpeed = 10;
 		player.moveSpeed = 1;
 		player.stopSpeed = 3;
-		bgMusic.stop();
-		sanic.play();
+		JukeBox.stop("bgMusic");
+		JukeBox.play("sanic");
 	}
 	public void update(){
+		if(pause)return;
 		if(s&&a&&n&&i&&c&&!GamePanel.ninjaSlayer){
 			gottaGoFast();
 			player.setSanic();
 		}
-		if(!bgMusic.isRunning()&&!player.sanic){
-			bgMusic.play();
-		}
 		player.update();
 		if(player.isDead()){
-			bgMusic.stop();
-			if(player.sanic){sanic.stop();}
+			JukeBox.stop("bgMusic");
+			JukeBox.stop("sanic");
 			gsm.setState(GameStateManager.GAMEOVER);
 		}
 		tileMap.setPosition(
-				
+
 				player.getx(),
 				player.gety());
 		background.update();
@@ -234,35 +253,80 @@ public class Level1State extends GameState{
 			explosions.get(i).draw(g);
 		}
 		hud.draw(g);
+		if(pause){
+			FontMetrics fm = g.getFontMetrics();
+			g.setFont(pauseFont);
+			g.setColor(Color.RED);
+			g.drawString("Paused", (GamePanel.WIDTH-fm.stringWidth("Paused"))/3, 64);
+			for(int i = 0; i < options.length; i++){
+				g.setColor(Color.LIGHT_GRAY);
+				if(currentChoice == i){
+					g.setColor(Color.GRAY);
+				}
+				g.drawString(options[i], 300, 200 + 60*i);
+			}
+		}
 	}
 	public void keyPressed(int k) {
-		if(k == KeyEvent.VK_UP)player.setUp(true);
-		if(k == KeyEvent.VK_DOWN)player.setDown(true);
-		if(k == KeyEvent.VK_LEFT)player.setLeft(true);
-		if(k == KeyEvent.VK_RIGHT)player.setRight(true);
-		if(k == KeyEvent.VK_Z)player.setJumping(true);
-		if(k == KeyEvent.VK_X)player.setFiring(true);
-		if(k == KeyEvent.VK_SPACE)gsm.setBulletTime(true);
-		if(k == KeyEvent.VK_S)s=!s;
-		if(k == KeyEvent.VK_A&&s)a=!a;
-		if(k == KeyEvent.VK_N&&s&&a)n=!n;
-		if(k == KeyEvent.VK_I&&s&&a&&n)i=!i;
-		if(k == KeyEvent.VK_C&&s&&a&&n&&i)c=!c;
-		if(!(k == KeyEvent.VK_S
-				||k == KeyEvent.VK_A
-				||k == KeyEvent.VK_N
-				||k == KeyEvent.VK_I
-				||k == KeyEvent.VK_C))s=a=n=i=c=false;
+		if(pause){
+			if(k == KeyEvent.VK_UP){
+				currentChoice--;
+				if (currentChoice == -1){
+					currentChoice = options.length - 1;
+				}
+			}
+			if(k == KeyEvent.VK_DOWN){
+				currentChoice++;
+				if (currentChoice == options.length){
+					currentChoice = 0;
+				}
+			}
+			if(k == KeyEvent.VK_ENTER){
+				switch(currentChoice){
+				case 0:
+					pause = false;
+					break;
+				case 1:
+					gsm.setState(GameStateManager.LEVEL1STATE);
+					break;
+				case 2:
+					toMenu();
+					break;
+				case 3:
+					System.exit(0);
+				}
+			}
+		}else{
+			if(k == KeyEvent.VK_UP)player.setUp(true);
+			if(k == KeyEvent.VK_DOWN)player.setDown(true);
+			if(k == KeyEvent.VK_LEFT)player.setLeft(true);
+			if(k == KeyEvent.VK_RIGHT)player.setRight(true);
+			if(k == KeyEvent.VK_Z)player.setJumping(true);
+			if(k == KeyEvent.VK_X)player.setFiring(true);
+			if(k == KeyEvent.VK_SPACE)gsm.setBulletTime(true);
+			if(k == KeyEvent.VK_ESCAPE)pause();
+			if(k == KeyEvent.VK_S)s=!s;
+			if(k == KeyEvent.VK_A&&s)a=!a;
+			if(k == KeyEvent.VK_N&&s&&a)n=!n;
+			if(k == KeyEvent.VK_I&&s&&a&&n)i=!i;
+			if(k == KeyEvent.VK_C&&s&&a&&n&&i)c=!c;
+			if(!(k == KeyEvent.VK_S
+					||k == KeyEvent.VK_A
+					||k == KeyEvent.VK_N
+					||k == KeyEvent.VK_I
+					||k == KeyEvent.VK_C))s=a=n=i=c=false;
+		}
 	}
 	public void keyReleased(int k) {
-
-		if(k == KeyEvent.VK_UP)player.setUp(false);
-		if(k == KeyEvent.VK_DOWN)player.setDown(false);
-		if(k == KeyEvent.VK_LEFT)player.setLeft(false);
-		if(k == KeyEvent.VK_RIGHT)player.setRight(false);
-		if(k == KeyEvent.VK_Z)player.setDy(player.getDy()/2);
-		if(k == KeyEvent.VK_X)player.setFiring(false);
-		if(k == KeyEvent.VK_SPACE)gsm.setBulletTime(false);
+		if(!pause){
+			if(k == KeyEvent.VK_UP)player.setUp(false);
+			if(k == KeyEvent.VK_DOWN)player.setDown(false);
+			if(k == KeyEvent.VK_LEFT)player.setLeft(false);
+			if(k == KeyEvent.VK_RIGHT)player.setRight(false);
+			if(k == KeyEvent.VK_Z)player.setDy(player.getDy()/2);
+			if(k == KeyEvent.VK_X)player.setFiring(false);
+			if(k == KeyEvent.VK_SPACE)gsm.setBulletTime(false);
+		}
 	}
 	public void toMenu(){
 		gsm.setState(GameStateManager.MENUSTATE);
