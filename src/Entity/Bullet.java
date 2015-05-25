@@ -1,12 +1,10 @@
 package Entity;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
-import javax.imageio.ImageIO;
-
+import GameState.Level1State;
 import Main.GamePanel;
-import TileMap.*;
+import TileMap.TileMap;
 
 public class Bullet extends MapObject{
 	public Animation animation;
@@ -15,9 +13,9 @@ public class Bullet extends MapObject{
 	public static String ninjaStar2 = "/Sprites/ThrowingStar2grey.png";
 	private boolean remove;
 	private int timer = 0;
-	private BufferedImage[] sprites;
 	private boolean[] items;
 	private int scale;
+	public static boolean cat = false;
 	public Bullet(TileMap tm, boolean right, boolean[] currentItems) {
 		super(tm);
 		this.items = currentItems;
@@ -39,28 +37,13 @@ public class Bullet extends MapObject{
 		height = 16*scale;
 		cwidth = 12*scale;
 		cheight = 12*scale;
-		
-		try{
-			animation = new Animation();
-			if(ninjaStar1 == "/Sprites/Orange-tabby-cat-icon.png"){
-				sprites = new BufferedImage[4];
-				sprites[0] = ImageIO.read(getClass().getResourceAsStream(ninjaStar1));
-				for(int i = 1; i<4; i++){
-					sprites[i] = ImageIO.read(getClass().getResourceAsStream
-							("/Sprites/Orange-tabby-cat-icon"+ i +".png"));
-				}
-				animation.setFrames(sprites);
-				animation.setDelay(50);
-			}else{
-				sprites = new BufferedImage[2];
-				sprites[0] = ImageIO.read(getClass().getResourceAsStream(ninjaStar1));
-				sprites[1] = ImageIO.read(getClass().getResourceAsStream(ninjaStar2));
-			
-				
-				animation.setFrames(sprites);
-				animation.setDelay(15);
-			}
-		}catch(Exception e){e.printStackTrace();}
+		animation = new Animation();
+		animation.setFrames(Level1State.bulletSprites);
+		if(cat){
+			animation.setDelay(80);
+		}else{
+			animation.setDelay(15);
+		}
 	}
 	public void setHit(){
 		if(hit)return;

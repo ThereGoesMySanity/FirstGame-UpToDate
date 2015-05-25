@@ -28,6 +28,7 @@ public class Level1State extends GameState{
 	private boolean n=false;
 	private boolean i=false;
 	private boolean c=false;
+	public static BufferedImage[] bulletSprites;
 	public Level1State(GameStateManager gsm){
 		this.gsm = gsm;
 		init();
@@ -78,6 +79,19 @@ public class Level1State extends GameState{
 							Explosion.height
 							);
 				}
+			}
+			if(Bullet.ninjaStar1 == "/Sprites/Orange-tabby-cat-icon.png"){
+				bulletSprites = new BufferedImage[4];
+				bulletSprites[0] = ImageIO.read(getClass().getResourceAsStream(Bullet.ninjaStar1));
+				for(int i = 1; i<4; i++){
+					bulletSprites[i] = ImageIO.read(getClass().getResourceAsStream
+							("/Sprites/Orange-tabby-cat-icon"+ i +".png"));
+				}
+				Bullet.cat = true;
+			}else{
+				bulletSprites = new BufferedImage[2];
+				bulletSprites[0] = ImageIO.read(getClass().getResourceAsStream(Bullet.ninjaStar1));
+				bulletSprites[1] = ImageIO.read(getClass().getResourceAsStream(Bullet.ninjaStar2));
 			}
 		}catch(Exception e){e.printStackTrace();}
 	}
