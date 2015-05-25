@@ -120,11 +120,9 @@ public class TileMap {
 		for(int row = rowOffset; row<rowOffset + numRowsToDraw; row++){
 			for(int col=colOffset; col<colOffset+numColsToDraw; col++){
 				if(row>=numRows){
-					System.out.println("1");
 					break;
 				}
 				if(col>=numCols){
-					System.out.println(numCols);
 					break;
 				}
 				

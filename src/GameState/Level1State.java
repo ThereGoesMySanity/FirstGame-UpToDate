@@ -28,6 +28,8 @@ public class Level1State extends GameState{
 	private boolean n=false;
 	private boolean i=false;
 	private boolean c=false;
+	public static BufferedImage[] flyingNinjaSprites_dmg;
+	public static BufferedImage[] flyingNinjaSprites;
 	public static BufferedImage[] bulletSprites;
 	public Level1State(GameStateManager gsm){
 		this.gsm = gsm;
@@ -43,9 +45,9 @@ public class Level1State extends GameState{
 		background.setVector(-5, 0);
 		player = new Player(tileMap);
 		player.setPosition(100, -100);
+		loadSprites();
 		populateEnemies();
 		populateItems();
-		loadSprites();
 		hud = new HUD(player);
 		explosions = new ArrayList<Explosion>();
 		if(GamePanel.ninjaSlayer){
@@ -92,6 +94,21 @@ public class Level1State extends GameState{
 				bulletSprites = new BufferedImage[2];
 				bulletSprites[0] = ImageIO.read(getClass().getResourceAsStream(Bullet.ninjaStar1));
 				bulletSprites[1] = ImageIO.read(getClass().getResourceAsStream(Bullet.ninjaStar2));
+			}
+			flyingNinjaSprites = new BufferedImage[2];
+			for(int i = 0; i < flyingNinjaSprites.length; i++) {
+				flyingNinjaSprites[i] = ImageIO.read(
+				getClass().getResourceAsStream(
+					"/Sprites/Ninja_clothes.png")
+				);
+			}
+			flyingNinjaSprites_dmg = new BufferedImage[2];
+			for(int i = 0; i < flyingNinjaSprites_dmg.length; i++) {
+				flyingNinjaSprites_dmg[i] = ImageIO.read(
+					getClass().getResourceAsStream(
+						"/Sprites/Ninja_clothes_dmg.png"
+					)
+				);
 			}
 		}catch(Exception e){e.printStackTrace();}
 	}

@@ -1,17 +1,14 @@
 package Entity.Enemies;
 
-import Entity.*;
-import TileMap.TileMap;
-
-import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 
-import javax.imageio.ImageIO;
+import Entity.Animation;
+import Entity.Enemy;
+import GameState.Level1State;
+import TileMap.TileMap;
 
 public class FlyingNinja extends Enemy {
 	
-	private BufferedImage[] sprites;
-	private BufferedImage[] sprites_dmg;
 	private int prevHealth;
 	private int healthCounter;
 	
@@ -33,34 +30,9 @@ public class FlyingNinja extends Enemy {
 		healthCounter = 0;
 		damage = 5;
 		
-		// load sprites
-		try {
-			
-			BufferedImage spritesheet = ImageIO.read(
-				getClass().getResourceAsStream(
-					"/Sprites/Ninja_clothes.png"
-				)
-			);
-			BufferedImage spritesheet_dmg = ImageIO.read(
-					getClass().getResourceAsStream(
-						"/Sprites/Ninja_clothes_dmg.png"
-					)
-				);
-			sprites = new BufferedImage[2];
-			for(int i = 0; i < sprites.length; i++) {
-				sprites[i] = spritesheet;
-			}
-			sprites_dmg = new BufferedImage[2];
-			for(int i = 0; i < sprites.length; i++) {
-				sprites_dmg[i] = spritesheet_dmg;
-			}
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
 		
 		animation = new Animation();
-		animation.setFrames(sprites);
+		animation.setFrames(Level1State.flyingNinjaSprites);
 		animation.setDelay(300);
 		
 		right = false;
@@ -99,14 +71,14 @@ public class FlyingNinja extends Enemy {
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 		if(prevHealth != health){
-			animation.setFrames(sprites_dmg);
+			animation.setFrames(Level1State.flyingNinjaSprites_dmg);
 			healthCounter = 1;
 			prevHealth = health;
 		}else if(healthCounter>0){
 			healthCounter++;
 			if(healthCounter == 11){
 				healthCounter = 0;
-				animation.setFrames(sprites);
+				animation.setFrames(Level1State.flyingNinjaSprites);
 			}
 		}
 		
