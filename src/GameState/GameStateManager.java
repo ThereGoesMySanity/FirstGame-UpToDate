@@ -95,4 +95,7 @@ public class GameStateManager {
 	public static boolean getCooldown(){
 		return btCooldown;
 	}
+	public static GameState currentGameState(){
+		return gameStates[currentState];
+	}
 }

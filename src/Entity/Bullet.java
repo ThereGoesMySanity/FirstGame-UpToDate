@@ -3,6 +3,7 @@ package Entity;
 import java.awt.Graphics2D;
 
 import GameState.GameStateManager;
+import GameState.Level1State;
 import Main.GamePanel;
 import TileMap.TileMap;
 
@@ -38,7 +39,7 @@ public class Bullet extends MapObject{
 		cwidth = 12*scale;
 		cheight = 12*scale;
 		animation = new Animation();
-		animation.setFrames(GameStateManager.gameStates[GameStateManager.currentState].bulletSprites);
+		animation.setFrames(Level1State.bulletSprites);
 		if(cat){
 			animation.setDelay(80);
 		}else{
