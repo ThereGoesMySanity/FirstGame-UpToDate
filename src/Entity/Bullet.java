@@ -2,7 +2,6 @@ package Entity;
 
 import java.awt.Graphics2D;
 
-import GameState.GameStateManager;
 import GameState.Level1State;
 import Main.GamePanel;
 import TileMap.TileMap;
